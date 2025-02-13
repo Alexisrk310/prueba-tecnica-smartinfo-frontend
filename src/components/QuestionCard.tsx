@@ -1,34 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Button, Box } from '@mui/material';
-
-interface QuestionCardProps {
-	question: string;
-	options: string[];
-	correctAnswer: string;
-	imageUrl?: string;
-	onAnswer: (isCorrect: boolean) => void;
-	onTimeUp: () => void;
-}
+import { QuestionCardProps } from '@/interfaces/questionsProps';
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
 	question,
 	options,
 	correctAnswer,
-	imageUrl,
 	onAnswer,
 	onTimeUp,
 }) => {
 	const [timeLeft, setTimeLeft] = useState<number>(10);
 
-	// Reiniciar el temporizador cuando cambia la pregunta
 	useEffect(() => {
-		setTimeLeft(10); // Reiniciar a 10 segundos
+		setTimeLeft(10);
 	}, [question]);
 
-	// Temporizador
 	useEffect(() => {
 		if (timeLeft === 0) {
-			onTimeUp(); // Llamar a onTimeUp cuando el tiempo se agote
+			onTimeUp();
 			return;
 		}
 
@@ -39,10 +28,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 		return () => clearInterval(timer);
 	}, [timeLeft, onTimeUp]);
 
-	// Manejar la selección de una respuesta
 	const handleAnswer = (option: string) => {
 		const isCorrect = option === correctAnswer;
-		onAnswer(isCorrect); // Notificar si la respuesta es correcta o no
+		onAnswer(isCorrect);
 	};
 
 	return (
@@ -57,13 +45,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 				<Typography variant="h5" component="div" gutterBottom>
 					{question}
 				</Typography>
-				{imageUrl && (
-					<img
-						src={imageUrl}
-						alt="Question"
-						style={{ width: '100%', borderRadius: '8px' }}
-					/>
-				)}
+
 				<Typography variant="h6" sx={{ mt: 2, color: '#2e7d32' }}>
 					Tiempo restante: {timeLeft} segundos
 				</Typography>

@@ -22,7 +22,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		message: string;
 	} | null>(null);
 
-	// Obtener la categoría actual desde los parámetros
+	
 	useEffect(() => {
 		async function name() {
 			const { quizzes } = await params;
@@ -32,9 +32,9 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		name();
 	}, [params]);
 
-	// Lógica para manejar respuestas y retroalimentación
+	
 	const handleAnswerWithFeedback = (isCorrect: boolean) => {
-		// Actualizar el puntaje usando handleAnswer del hook
+		
 		handleAnswer(isCorrect);
 
 		// Mostrar retroalimentación
@@ -44,14 +44,14 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 			setFeedback({ correct: false, message: 'Respuesta Incorrecta' });
 		}
 
-		// Después de 1 segundo, pasar a la siguiente pregunta
+		
 		setTimeout(() => {
 			setFeedback(null);
 			nextQuestion();
 		}, 1000);
 	};
 
-	// Hook personalizado para manejar la lógica del quiz
+	
 	const { handleAnswer, nextQuestion, startQuiz } = useQuestions(
 		setScore,
 		currentCategory,
@@ -62,12 +62,12 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		setQuizStarted
 	);
 
-	// Mostrar el esqueleto de carga si no hay datos
+	
 	if (!quizzes) {
 		return <SkeletonStartQuiz />;
 	}
 
-	// Mostrar la pantalla de puntaje final
+	
 	if (showScore) {
 		return (
 			<Box
@@ -109,7 +109,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		);
 	}
 
-	// Mostrar la pantalla de inicio del quiz
+
 	if (!quizStarted) {
 		return (
 			<Box
@@ -157,7 +157,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		);
 	}
 
-	// Mostrar la pregunta actual
+
 	return (
 		<Box
 			sx={{
