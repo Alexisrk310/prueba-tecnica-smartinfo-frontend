@@ -1,1 +1,1 @@
-type TypeQuestion = 'math' | 'social' | 'physics' | 'art' | '';
+export type TypeQuestion = 'math' | 'social' | 'physics' | 'art' | '';

@@ -37,7 +37,7 @@ const LoginForm = () => {
 					justifyContent: 'center',
 					height: '80vh',
 				}}>
-				<LockIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+				<LockIcon sx={{ fontSize: 40, color: '#427b3e' }} />
 				<Typography component="h1" variant="h5">
 					Iniciar Sesión
 				</Typography>
@@ -68,7 +68,7 @@ const LoginForm = () => {
 						type="submit"
 						fullWidth
 						variant="contained"
-						sx={{ mt: 3, mb: 2 }}>
+						sx={{ background: '#78b474', mt: 3, mb: 2 }}>
 						Iniciar Sesión
 					</Button>
 				</Box>
