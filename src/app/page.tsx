@@ -1,26 +1,30 @@
 'use client';
-import React, { ChangeEvent, FormEvent, useState } from 'react';
+import React, { FormEvent } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
+import { useAuthForm } from '@/hooks/useForm';
 
 const LoginForm = () => {
 	const router = useRouter();
-	const [inputValue, setInputValue] = useState({
-		email: '',
-		password: '',
+	const { formAuth, setFormAuth, handleChange } = useAuthForm({
+		email: 'alexis@gmail.com',
+		password: 'alexis123',
 	});
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setInputValue({
-			...inputValue,
-			[e.target.name]: e.target.value,
-		});
-	};
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		router.push('/questions');
-		console.log('Email:', inputValue.email);
-		console.log('Password:', inputValue.password);
+		setFormAuth({
+			email: formAuth.email,
+			password: formAuth.password,
+		});
+		if (formAuth) {
+			router.push('/questions');
+		} else {
+			console.log('Invalid credentials');
+		}
+
+		console.log('Email:', formAuth.email);
+		console.log('Password:', formAuth.password);
 	};
 
 	return (
@@ -46,7 +50,7 @@ const LoginForm = () => {
 						name="email"
 						autoComplete="email"
 						autoFocus
-						value={inputValue.email}
+						value={formAuth.email}
 						onChange={handleChange}
 					/>
 					<TextField
@@ -57,7 +61,7 @@ const LoginForm = () => {
 						label="Contraseña"
 						type="password"
 						autoComplete="current-password"
-						value={inputValue.password}
+						value={formAuth.password}
 						onChange={handleChange}
 					/>
 					<Button
