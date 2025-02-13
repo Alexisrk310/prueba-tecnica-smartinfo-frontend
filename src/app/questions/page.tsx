@@ -24,27 +24,25 @@ const QuestionPage = () => {
 				justifyContent: 'center',
 				gap: 5,
 				height: '100vh',
-				padding: 3, // Añadir padding para evitar que el contenido toque los bordes en móviles
+				padding: 3,
 			}}>
-			{/* Contenedor para los Box (matemáticas, sociales, física, artística) */}
 			<Box
 				sx={{
 					display: 'grid',
-					gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, // 1 columna en móviles, 2 en pantallas más grandes
+					gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
 					gap: 5,
-					width: '100%', // Ocupar el ancho disponible
-					maxWidth: '800px', // Limitar el ancho máximo
+					width: '100%',
+					maxWidth: '800px',
 				}}>
-				{/* Box de Matemáticas */}
 				<Box
 					sx={{
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'center',
 						justifyContent: 'center',
-						paddingX: { xs: 2, sm: 10 }, // Menor padding en móviles
-						height: { xs: '120px', sm: '150px' }, // Altura más pequeña en móviles
-						minWidth: '200px', // Tamaño mínimo
+						paddingX: { xs: 2, sm: 10 },
+						height: { xs: '120px', sm: '150px' },
+						minWidth: '200px',
 						border: '1px solid #000',
 						backgroundImage:
 							"url('https://epe.brightspotcdn.com/02/ac/a5498e524778b568fea054141968/math-102023-1281244731-01.jpg')",
@@ -52,7 +50,7 @@ const QuestionPage = () => {
 						cursor: 'pointer',
 						backgroundSize: 'cover',
 						transform: selectQuizze === 'math' ? 'scale(1.1)' : 'scale(1)',
-						transition: 'transform 0.3s ease', // Suavizar la animación
+						transition: 'transform 0.3s ease',
 						'&:hover': {
 							transform: 'scale(1.1)',
 						},
@@ -68,7 +66,7 @@ const QuestionPage = () => {
 					<Typography
 						sx={{
 							fontWeight: 'bold',
-							fontSize: { xs: '1.25rem', sm: '1.5rem' }, // Tamaño de fuente responsivo
+							fontSize: { xs: '1.25rem', sm: '1.5rem' },
 						}}
 						component="h1"
 						variant="h4">
@@ -76,7 +74,6 @@ const QuestionPage = () => {
 					</Typography>
 				</Box>
 
-				{/* Box de Sociales */}
 				<Box
 					sx={{
 						display: 'flex',
@@ -117,7 +114,6 @@ const QuestionPage = () => {
 					</Typography>
 				</Box>
 
-				{/* Box de Física */}
 				<Box
 					sx={{
 						display: 'flex',
@@ -158,7 +154,6 @@ const QuestionPage = () => {
 					</Typography>
 				</Box>
 
-				{/* Box de Artística */}
 				<Box
 					sx={{
 						display: 'flex',
@@ -200,14 +195,20 @@ const QuestionPage = () => {
 				</Box>
 			</Box>
 
-			{/* Botón de Elegir */}
 			<Box
-				sx={{ width: '100%', maxWidth: '500px', textAlign: 'center', mt: 3 }}>
+				sx={{
+					display: 'flex',
+					width: '100%',
+					maxWidth: '500px',
+					textAlign: 'center',
+					mt: 3,
+					gap: 2,
+				}}>
 				<Button
 					sx={{
 						width: '100%',
 						background: '#427b3e',
-						color: '#FFFF',
+						color: '#FFFFFF',
 						fontWeight: 'bold',
 						'&:hover': {
 							background: '#5aa256',
@@ -216,6 +217,13 @@ const QuestionPage = () => {
 					disabled={!selectQuizze}
 					onClick={handleSubmit}>
 					ELEGIR
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={() => router.back()}
+					sx={{ backgroundColor: 'red', color: '#fff', width: '100%' }}>
+					CERRAR SESIÓN
 				</Button>
 			</Box>
 		</Container>

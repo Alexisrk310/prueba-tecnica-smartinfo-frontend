@@ -7,6 +7,7 @@ import { TypeQuestion } from '@/types/typeQuestionsType';
 import { useRouter } from 'next/navigation';
 import { ParamsQuizzesProps } from '@/interfaces/params';
 import SkeletonStartQuiz from '@/components/SkeletonStartQuiz';
+import useQuestions from '@/hooks/useQuestions';
 
 export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 	const router = useRouter();
@@ -26,31 +27,15 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		name();
 	}, [params]);
 
-	const handleAnswer = (isCorrect: boolean) => {
-		if (isCorrect) {
-			setScore((prev) => prev + 10);
-		}
-		nextQuestion();
-	};
-
-	const nextQuestion = () => {
-		if (
-			currentCategory &&
-			currentQuestionIndex < allQuestions[currentCategory].length - 1
-		) {
-			setCurrentQuestionIndex((prev) => prev + 1);
-		} else {
-			setShowScore(true);
-		}
-	};
-
-	const startQuiz = () => {
-		setQuizStarted(true);
-		setCurrentQuestionIndex(0);
-		setScore(0);
-		setShowScore(false);
-	};
-
+	const { handleAnswer, nextQuestion, startQuiz } = useQuestions(
+		setScore,
+		currentCategory,
+		currentQuestionIndex,
+		allQuestions,
+		setCurrentQuestionIndex,
+		setShowScore,
+		setQuizStarted
+	);
 	if (!quizzes) {
 		return <SkeletonStartQuiz />;
 	}
@@ -122,13 +107,22 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 					<Typography variant="h5" sx={{ color: '#2e7d32', mb: 4 }}>
 						Cada pregunta tiene un límite de 10 segundos.
 					</Typography>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={startQuiz}
-						sx={{ backgroundColor: '#388e3c', color: '#fff' }}>
-						Comenzar Quiz
-					</Button>
+					<Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={startQuiz}
+							sx={{ backgroundColor: '#388e3c', color: '#fff' }}>
+							Comenzar Quiz
+						</Button>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={() => router.back()}
+							sx={{ backgroundColor: 'red', color: '#fff' }}>
+							Regresar
+						</Button>
+					</Box>
 				</Box>
 			</Box>
 		);
