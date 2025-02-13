@@ -17,7 +17,12 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 	const [score, setScore] = useState<number>(0);
 	const [showScore, setShowScore] = useState<boolean>(false);
 	const [quizStarted, setQuizStarted] = useState<boolean>(false);
+	const [feedback, setFeedback] = useState<{
+		correct: boolean;
+		message: string;
+	} | null>(null);
 
+	// Obtener la categoría actual desde los parámetros
 	useEffect(() => {
 		async function name() {
 			const { quizzes } = await params;
@@ -27,6 +32,26 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		name();
 	}, [params]);
 
+	// Lógica para manejar respuestas y retroalimentación
+	const handleAnswerWithFeedback = (isCorrect: boolean) => {
+		// Actualizar el puntaje usando handleAnswer del hook
+		handleAnswer(isCorrect);
+
+		// Mostrar retroalimentación
+		if (isCorrect) {
+			setFeedback({ correct: true, message: '¡Respuesta Correcta!' });
+		} else {
+			setFeedback({ correct: false, message: 'Respuesta Incorrecta' });
+		}
+
+		// Después de 1 segundo, pasar a la siguiente pregunta
+		setTimeout(() => {
+			setFeedback(null);
+			nextQuestion();
+		}, 1000);
+	};
+
+	// Hook personalizado para manejar la lógica del quiz
 	const { handleAnswer, nextQuestion, startQuiz } = useQuestions(
 		setScore,
 		currentCategory,
@@ -36,10 +61,13 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		setShowScore,
 		setQuizStarted
 	);
+
+	// Mostrar el esqueleto de carga si no hay datos
 	if (!quizzes) {
 		return <SkeletonStartQuiz />;
 	}
 
+	// Mostrar la pantalla de puntaje final
 	if (showScore) {
 		return (
 			<Box
@@ -81,6 +109,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		);
 	}
 
+	// Mostrar la pantalla de inicio del quiz
 	if (!quizStarted) {
 		return (
 			<Box
@@ -128,6 +157,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		);
 	}
 
+	// Mostrar la pregunta actual
 	return (
 		<Box
 			sx={{
@@ -153,9 +183,16 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 				<Typography variant="h5" sx={{ color: '#2e7d32', mb: 4 }}>
 					Puntos: {score}
 				</Typography>
+				{feedback && (
+					<Typography
+						variant="h5"
+						sx={{ color: feedback.correct ? '#2e7d32' : '#d32f2f', mb: 4 }}>
+						{feedback.message}
+					</Typography>
+				)}
 				<QuestionCard
 					{...allQuestions[currentCategory][currentQuestionIndex]}
-					onAnswer={handleAnswer}
+					onAnswer={handleAnswerWithFeedback}
 					onTimeUp={nextQuestion}
 				/>
 			</Box>

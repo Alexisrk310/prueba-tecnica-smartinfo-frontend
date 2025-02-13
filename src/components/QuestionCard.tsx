@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Button, Grid, Box } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box } from '@mui/material';
 
 interface QuestionCardProps {
 	question: string;
@@ -25,6 +25,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 		setTimeLeft(10); // Reiniciar a 10 segundos
 	}, [question]);
 
+	// Temporizador
 	useEffect(() => {
 		if (timeLeft === 0) {
 			onTimeUp(); // Llamar a onTimeUp cuando el tiempo se agote
@@ -38,12 +39,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 		return () => clearInterval(timer);
 	}, [timeLeft, onTimeUp]);
 
+	// Manejar la selección de una respuesta
 	const handleAnswer = (option: string) => {
-		if (option === correctAnswer) {
-			onAnswer(true); // Sumar puntos si la respuesta es correcta
-		} else {
-			onAnswer(false); // No sumar puntos si la respuesta es incorrecta
-		}
+		const isCorrect = option === correctAnswer;
+		onAnswer(isCorrect); // Notificar si la respuesta es correcta o no
 	};
 
 	return (
