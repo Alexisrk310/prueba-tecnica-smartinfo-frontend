@@ -10,18 +10,17 @@ const LoginForm = () => {
 		email: '',
 		password: '',
 	});
-
-	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		router.push('/questions');
-		console.log('Email:', inputValue.email);
-		console.log('Password:', inputValue.password);
-	};
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setInputValue({
 			...inputValue,
 			[e.target.name]: e.target.value,
 		});
+	};
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		router.push('/questions');
+		console.log('Email:', inputValue.email);
+		console.log('Password:', inputValue.password);
 	};
 
 	return (
