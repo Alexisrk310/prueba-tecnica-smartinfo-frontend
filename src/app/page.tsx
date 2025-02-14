@@ -1,69 +1,93 @@
 'use client';
 import React, { FormEvent, useState } from 'react';
-import {
-	TextField,
-	Button,
-	Container,
-	Typography,
-	Box,
-	Link,
-} from '@mui/material';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import {
 	Lock as LockIcon,
 	PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useAuthForm } from '@/hooks/useForm';
+import { loginAuth } from '@/services/api/post/Auth'; // Importa la función loginAuth
+import { userAuth } from '@/interfaces/user.Interface'; // Asegúrate de importar la interfaz correcta
 
 const LoginForm = () => {
 	const router = useRouter();
 	const { formAuth, setFormAuth, handleChange } = useAuthForm({
-		name: 'alexis',
+		username: 'alexis',
 		email: 'alexis@gmail.com',
 		password: 'alexis123',
 		confirmPassword: 'alexis123',
 	});
 	const [isRegister, setIsRegister] = useState(false);
-	const [passwordError, setPasswordError] = useState(''); // Estado para manejar errores de contraseña
+	const [passwordError, setPasswordError] = useState('');
+	const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar errores
 
-	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setFormAuth({
-			...formAuth,
-			email: formAuth.email,
-			password: formAuth.password,
-		});
-		if (formAuth) {
-			router.push('/questions');
-		} else {
-			console.log('Invalid credentials');
+
+		// Validar campos antes de enviar
+		if (!formAuth.email || !formAuth.password) {
+			setErrorMessage('Por favor, completa todos los campos.');
+			return;
 		}
 
-		console.log('Email:', formAuth.email);
-		console.log('Password:', formAuth.password);
+		try {
+			// Llamar a la función loginAuth para el login
+			const credentials: Partial<userAuth> = {
+				email: formAuth.email,
+				password: formAuth.password,
+			};
+			const data = await loginAuth(credentials, 'login');
+
+			if (data && data.access_token) {
+				// Guardar el token en localStorage
+				localStorage.setItem('access_token', data.access_token);
+				// Redirigir al usuario a la página de preguntas
+				router.push('/questions');
+			} else {
+				setErrorMessage('Credenciales inválidas.');
+			}
+		} catch (error: any) {
+			setErrorMessage(error.message || 'Error durante el login.');
+		}
 	};
 
-	const handleRegisterSubmit = (e: FormEvent<HTMLFormElement>) => {
+	const handleRegisterSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
+		// Validar que las contraseñas coincidan
 		if (formAuth.password !== formAuth.confirmPassword) {
 			setPasswordError('Las contraseñas no coinciden');
 			return;
 		}
-
 		setPasswordError('');
-		setFormAuth({
-			...formAuth,
-			name: formAuth.name,
-			email: formAuth.email,
-			password: formAuth.password,
-		});
-		if (formAuth) {
-			router.push('/questions');
-		} else {
-			console.log('Invalid credentials');
+
+		// Validar campos antes de enviar
+		if (!formAuth.username || !formAuth.email || !formAuth.password) {
+			setErrorMessage('Por favor, completa todos los campos.');
+			return;
 		}
-		console.log('Registro exitoso:', formAuth);
+
+		try {
+			// Llamar a la función loginAuth para el registro
+			const credentials: Partial<userAuth> = {
+				username: formAuth.username,
+				email: formAuth.email,
+				password: formAuth.password,
+			};
+			const data = await loginAuth(credentials, 'register');
+
+			if (data) {
+				// Registro exitoso, redirigir al login
+				setErrorMessage(''); // Limpiar mensajes de error
+				setIsRegister(false); // Cambiar a la vista de login
+				alert('Registro exitoso. Por favor, inicia sesión.'); // Mostrar mensaje de éxito
+			} else {
+				setErrorMessage('Error durante el registro.');
+			}
+		} catch (error: any) {
+			setErrorMessage(error.message || 'Error durante el registro.');
+		}
 	};
 
 	return (
@@ -82,6 +106,11 @@ const LoginForm = () => {
 						<Typography component="h1" variant="h5">
 							Registro
 						</Typography>
+						{errorMessage && (
+							<Typography variant="body2" sx={{ color: 'red', mt: 2 }}>
+								{errorMessage}
+							</Typography>
+						)}
 						<Box
 							component="form"
 							onSubmit={handleRegisterSubmit}
@@ -91,10 +120,10 @@ const LoginForm = () => {
 								required
 								fullWidth
 								label="Nombre"
-								name="name"
+								name="username"
 								autoComplete="name"
 								autoFocus
-								value={formAuth.name}
+								value={formAuth.username}
 								onChange={handleChange}
 							/>
 							<TextField
@@ -163,6 +192,11 @@ const LoginForm = () => {
 						<Typography component="h1" variant="h5">
 							Iniciar Sesión
 						</Typography>
+						{errorMessage && (
+							<Typography variant="body2" sx={{ color: 'red', mt: 2 }}>
+								{errorMessage}
+							</Typography>
+						)}
 						<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
 							<TextField
 								margin="normal"

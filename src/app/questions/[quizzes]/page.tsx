@@ -2,12 +2,28 @@
 import React, { useEffect, useState } from 'react';
 import QuestionCard from '@/components/QuestionCard';
 import { Typography, Button, Box } from '@mui/material';
-import { allQuestions } from '@/data/questions';
 import { TypeQuestion } from '@/types/typeQuestionsType';
 import { useRouter } from 'next/navigation';
 import { ParamsQuizzesProps } from '@/interfaces/params';
 import SkeletonStartQuiz from '@/components/SkeletonStartQuiz';
 import useQuestions from '@/hooks/useQuestions';
+
+// Función para obtener las preguntas de la API
+export const question = async (pathname: string) => {
+	const loginEndpoint = `http://localhost:4000/questions?category=${pathname}`;
+	try {
+		const response = await fetch(loginEndpoint);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+
+		const data = await response.json();
+		return data;
+	} catch (error: any) {
+		throw new Error(error.message || 'No hay preguntas.');
+	}
+};
 
 export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 	const router = useRouter();
@@ -21,53 +37,53 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		correct: boolean;
 		message: string;
 	} | null>(null);
+	const [questions, setQuestions] = useState<any[]>([]); // Estado para almacenar las preguntas de la API
 
-	
 	useEffect(() => {
-		async function name() {
-			const { quizzes } = await params;
-			setQuizzes(quizzes as TypeQuestion);
-			setCurrentCategory(quizzes as TypeQuestion);
+		async function fetchQuestions() {
+			try {
+				const { quizzes } = await params;
+				setCurrentCategory(quizzes as TypeQuestion);
+
+				// Llamar a la API para obtener las preguntas
+				const data = await question(quizzes as string);
+				setQuestions(data); // Almacenar las preguntas en el estado
+				setQuizzes(quizzes as TypeQuestion);
+			} catch (error) {
+				console.error('Error fetching questions:', error);
+			}
 		}
-		name();
+		fetchQuestions();
 	}, [params]);
 
-	
 	const handleAnswerWithFeedback = (isCorrect: boolean) => {
-		
 		handleAnswer(isCorrect);
 
-		// Mostrar retroalimentación
 		if (isCorrect) {
 			setFeedback({ correct: true, message: '¡Respuesta Correcta!' });
 		} else {
 			setFeedback({ correct: false, message: 'Respuesta Incorrecta' });
 		}
 
-		
 		setTimeout(() => {
 			setFeedback(null);
 			nextQuestion();
 		}, 1000);
 	};
 
-	
 	const { handleAnswer, nextQuestion, startQuiz } = useQuestions(
 		setScore,
-		currentCategory,
 		currentQuestionIndex,
-		allQuestions,
+		questions, // Usar las preguntas obtenidas de la API
 		setCurrentQuestionIndex,
 		setShowScore,
 		setQuizStarted
 	);
 
-	
 	if (!quizzes) {
 		return <SkeletonStartQuiz />;
 	}
 
-	
 	if (showScore) {
 		return (
 			<Box
@@ -108,7 +124,6 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 			</Box>
 		);
 	}
-
 
 	if (!quizStarted) {
 		return (
@@ -157,7 +172,6 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		);
 	}
 
-
 	return (
 		<Box
 			sx={{
@@ -191,7 +205,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 					</Typography>
 				)}
 				<QuestionCard
-					{...allQuestions[currentCategory][currentQuestionIndex]}
+					{...questions[currentQuestionIndex]} // Usar las preguntas de la API
 					onAnswer={handleAnswerWithFeedback}
 					onTimeUp={nextQuestion}
 				/>

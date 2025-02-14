@@ -4,7 +4,7 @@ import { QuestionCardProps } from '@/interfaces/questionsProps';
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
 	question,
-	options,
+	options = [],
 	correctAnswer,
 	onAnswer,
 	onTimeUp,

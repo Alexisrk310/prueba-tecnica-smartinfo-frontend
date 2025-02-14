@@ -1,12 +1,10 @@
 import React from 'react';
 import { Question } from '@/interfaces/questionsProps';
-import { TypeQuestion } from '@/types/typeQuestionsType';
 
 const useQuestions = (
 	setScore: React.Dispatch<React.SetStateAction<number>>,
-	currentCategory: TypeQuestion,
 	currentQuestionIndex: number,
-	allQuestions: Record<TypeQuestion, Question[]>,
+	questions: Question[], // Cambiar allQuestions por questions (preguntas de la API)
 	setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>,
 	setShowScore: React.Dispatch<React.SetStateAction<boolean>>,
 	setQuizStarted: React.Dispatch<React.SetStateAction<boolean>>
@@ -21,10 +19,7 @@ const useQuestions = (
 
 	// Función para pasar a la siguiente pregunta
 	const nextQuestion = () => {
-		if (
-			currentCategory &&
-			currentQuestionIndex < allQuestions[currentCategory].length - 1
-		) {
+		if (questions && currentQuestionIndex < questions.length - 1) {
 			setCurrentQuestionIndex((prev: number) => prev + 1); // Siguiente pregunta
 		} else {
 			setShowScore(true); // Mostrar puntaje final

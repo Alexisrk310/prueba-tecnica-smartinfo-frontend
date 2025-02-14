@@ -14,6 +14,10 @@ const QuestionPage = () => {
 	const handleSubmit = () => {
 		router.push(`/questions/${selectQuizze}`);
 	};
+	const logOut = () => {
+		localStorage.removeItem('access_token');
+		router.back();
+	};
 	return (
 		<Container
 			maxWidth="lg"
@@ -221,9 +225,16 @@ const QuestionPage = () => {
 				<Button
 					variant="contained"
 					color="primary"
-					onClick={() => router.back()}
+					onClick={logOut}
 					sx={{ backgroundColor: 'red', color: '#fff', width: '100%' }}>
 					CERRAR SESIÓN
+				</Button>
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={() => router.push('/ranking')}
+					sx={{ color: '#fff', width: '100%' }}>
+					VER RANKING
 				</Button>
 			</Box>
 		</Container>
