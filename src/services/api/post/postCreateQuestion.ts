@@ -7,7 +7,7 @@ export const postCreateQuestion = async (
 	},
 	pathname: string
 ) => {
-	const loginEndpoint = `http://localhost:4000/${pathname}`;
+	const loginEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/${pathname}`;
 	try {
 		const response = await fetch(loginEndpoint, {
 			method: 'POST',

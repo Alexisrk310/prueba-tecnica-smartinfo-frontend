@@ -1,5 +1,5 @@
 export const question = async (pathname: string) => {
-	const loginEndpoint = `http://localhost:4000/questions?category=${pathname}`;
+	const loginEndpoint = `${process.env.NEXT_PUBLIC_API_URL}/questions?category=${pathname}`;
 	try {
 		const response = await fetch(loginEndpoint);
 
