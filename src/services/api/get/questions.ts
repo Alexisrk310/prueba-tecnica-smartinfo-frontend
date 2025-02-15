@@ -1,4 +1,3 @@
-
 export const question = async (pathname: string) => {
 	const loginEndpoint = `http://localhost:4000/questions?category=${pathname}`;
 	try {

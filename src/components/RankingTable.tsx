@@ -15,6 +15,7 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
+	Button,
 	Paper,
 	Table,
 	TableBody,
@@ -24,16 +25,13 @@ import {
 	TableRow,
 	Typography,
 } from '@mui/material';
-import SortableRow from './SortableRow'; // Lo crearemos en el siguiente paso
+import SortableRow from './SortableRow';
 import socket from '../lib/socket';
-
-interface User {
-	id: string;
-	name: string;
-	score: number;
-}
+import { User } from '@/interfaces/user.Interface';
+import { useRouter } from 'next/navigation';
 
 const RankingTable: React.FC = () => {
+	const router = useRouter();
 	const [ranking, setRanking] = useState<User[]>([
 		{ id: '1', name: 'Usuario 1', score: 100 },
 		{ id: '2', name: 'Usuario 2', score: 90 },
@@ -108,6 +106,7 @@ const RankingTable: React.FC = () => {
 						</SortableContext>
 					</TableBody>
 				</Table>
+				<Button onClick={() => router.back()}>REGRESAR</Button>
 			</TableContainer>
 		</DndContext>
 	);

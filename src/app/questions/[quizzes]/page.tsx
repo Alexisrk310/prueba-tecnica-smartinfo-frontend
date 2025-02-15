@@ -8,22 +8,9 @@ import { ParamsQuizzesProps } from '@/interfaces/params';
 import SkeletonStartQuiz from '@/components/SkeletonStartQuiz';
 import useQuestions from '@/hooks/useQuestions';
 
-// Función para obtener las preguntas de la API
-export const question = async (pathname: string) => {
-	const loginEndpoint = `http://localhost:4000/questions?category=${pathname}`;
-	try {
-		const response = await fetch(loginEndpoint);
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! Status: ${response.status}`);
-		}
-
-		const data = await response.json();
-		return data;
-	} catch (error: any) {
-		throw new Error(error.message || 'No hay preguntas.');
-	}
-};
+import { postScore } from '@/services/api/post/postScore';
+import { question } from '@/services/api/get/questions';
+import QuestionModal from '@/components/QuestionModal';
 
 export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 	const router = useRouter();
@@ -37,8 +24,11 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 		correct: boolean;
 		message: string;
 	} | null>(null);
-	const [questions, setQuestions] = useState<any[]>([]); // Estado para almacenar las preguntas de la API
+	const [questions, setQuestions] = useState<any[]>([]);
 
+	console.log(localStorage.getItem('access_token'));
+	const role = localStorage?.getItem('isAdmin');
+	console.log(role);
 	useEffect(() => {
 		async function fetchQuestions() {
 			try {
@@ -47,14 +37,39 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 
 				// Llamar a la API para obtener las preguntas
 				const data = await question(quizzes as string);
-				setQuestions(data); // Almacenar las preguntas en el estado
+				setQuestions(data);
 				setQuizzes(quizzes as TypeQuestion);
 			} catch (error) {
-				console.error('Error fetching questions:', error);
+				throw Error('Error: No hay respuesta:');
 			}
 		}
 		fetchQuestions();
 	}, [params]);
+	const [modalOpen, setModalOpen] = useState(false); // Estado para controlar si el modal está abierto
+
+	const handleOpenModal = () => setModalOpen(true); // Abrir el modal
+	const handleCloseModal = () => setModalOpen(false); // Cerrar el modal
+	const handleCreateQuestion = () => {
+		handleOpenModal();
+	};
+	// Enviar el puntaje al servidor cuando showScore sea true
+	useEffect(() => {
+		if (showScore) {
+			sendScoreToServer();
+		}
+	}, [showScore]);
+
+	const sendScoreToServer = async () => {
+		try {
+			// Enviar el puntaje al servidor
+			const response = await postScore(score, 'score');
+			console.log('Puntaje enviado correctamente:', response);
+			// Aquí puedes mostrar un mensaje de éxito o redirigir al usuario
+		} catch (error) {
+			console.error('Error al enviar el puntaje:', error);
+			// Aquí puedes mostrar un mensaje de error al usuario
+		}
+	};
 
 	const handleAnswerWithFeedback = (isCorrect: boolean) => {
 		handleAnswer(isCorrect);
@@ -74,7 +89,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 	const { handleAnswer, nextQuestion, startQuiz } = useQuestions(
 		setScore,
 		currentQuestionIndex,
-		questions, // Usar las preguntas obtenidas de la API
+		questions,
 		setCurrentQuestionIndex,
 		setShowScore,
 		setQuizStarted
@@ -159,6 +174,16 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 							sx={{ backgroundColor: '#388e3c', color: '#fff' }}>
 							Comenzar Quiz
 						</Button>
+						{role === 'true' && (
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={handleCreateQuestion}
+								sx={{ color: '#fff' }}>
+								CREAR UNA PREGUNTA
+							</Button>
+						)}
+						<QuestionModal open={modalOpen} onClose={handleCloseModal} />
 						<Button
 							variant="contained"
 							color="primary"
@@ -205,7 +230,7 @@ export default function QuizzesPage({ params }: ParamsQuizzesProps) {
 					</Typography>
 				)}
 				<QuestionCard
-					{...questions[currentQuestionIndex]} // Usar las preguntas de la API
+					{...questions[currentQuestionIndex]}
 					onAnswer={handleAnswerWithFeedback}
 					onTimeUp={nextQuestion}
 				/>

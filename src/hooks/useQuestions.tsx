@@ -4,29 +4,26 @@ import { Question } from '@/interfaces/questionsProps';
 const useQuestions = (
 	setScore: React.Dispatch<React.SetStateAction<number>>,
 	currentQuestionIndex: number,
-	questions: Question[], // Cambiar allQuestions por questions (preguntas de la API)
+	questions: Question[],
 	setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>,
 	setShowScore: React.Dispatch<React.SetStateAction<boolean>>,
 	setQuizStarted: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-	// Función para manejar la respuesta
 	const handleAnswer = (isCorrect: boolean) => {
 		if (isCorrect) {
-			setScore((prev: number) => prev + 10); // Sumar 10 puntos si es correcta
+			setScore((prev: number) => prev + 10);
 		}
-		return isCorrect; // Devolver si la respuesta fue correcta
+		return isCorrect;
 	};
 
-	// Función para pasar a la siguiente pregunta
 	const nextQuestion = () => {
 		if (questions && currentQuestionIndex < questions.length - 1) {
-			setCurrentQuestionIndex((prev: number) => prev + 1); // Siguiente pregunta
+			setCurrentQuestionIndex((prev: number) => prev + 1);
 		} else {
-			setShowScore(true); // Mostrar puntaje final
+			setShowScore(true);
 		}
 	};
 
-	// Función para iniciar el quiz
 	const startQuiz = () => {
 		setQuizStarted(true);
 		setCurrentQuestionIndex(0);

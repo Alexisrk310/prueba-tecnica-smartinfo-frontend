@@ -1,7 +1,16 @@
 'use client';
 import React, { FormEvent, useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import {
+	TextField,
+	Button,
+	Container,
+	Typography,
+	Box,
+	FormControlLabel,
+	Checkbox,
+} from '@mui/material';
+import {
+	CheckBox,
 	Lock as LockIcon,
 	PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
@@ -14,6 +23,7 @@ const LoginForm = () => {
 	const router = useRouter();
 	const { formAuth, setFormAuth, handleChange } = useAuthForm({
 		username: 'alexis',
+		isAdmin: false,
 		email: 'alexis@gmail.com',
 		password: 'alexis123',
 		confirmPassword: 'alexis123',
@@ -25,7 +35,6 @@ const LoginForm = () => {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		// Validar campos antes de enviar
 		if (!formAuth.email || !formAuth.password) {
 			setErrorMessage('Por favor, completa todos los campos.');
 			return;
@@ -40,9 +49,11 @@ const LoginForm = () => {
 			const data = await loginAuth(credentials, 'login');
 
 			if (data && data.access_token) {
-				// Guardar el token en localStorage
+				console.log(data);
+
 				localStorage.setItem('access_token', data.access_token);
-				// Redirigir al usuario a la página de preguntas
+				localStorage.setItem('isAdmin', data.user?.isAdmin);
+
 				router.push('/questions');
 			} else {
 				setErrorMessage('Credenciales inválidas.');
@@ -161,6 +172,16 @@ const LoginForm = () => {
 								error={!!passwordError}
 								helperText={passwordError}
 							/>
+							<FormControlLabel
+								control={
+									<Checkbox
+										name="isAdmin"
+										checked={formAuth.isAdmin}
+										onChange={handleChange}
+									/>
+								}
+								label="Soy Administrador"
+							/>
 							<Button
 								type="submit"
 								fullWidth
@@ -220,6 +241,7 @@ const LoginForm = () => {
 								value={formAuth.password}
 								onChange={handleChange}
 							/>
+
 							<Button
 								type="submit"
 								fullWidth
